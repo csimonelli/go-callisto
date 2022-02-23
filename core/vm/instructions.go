@@ -17,6 +17,7 @@
 package vm
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -794,7 +795,7 @@ func opCall(pc *uint64, interpreter *EVMInterpreter, callContext *callCtx) ([]by
 		callContext.stack.push(interpreter.intPool.get().SetUint64(1))
 	}
 	if err == nil || err == ErrExecutionReverted {
-		ret = common.CopyBytes(ret)
+		ret = preserveRet(interpreter, ret)
 		callContext.memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
 	callContext.contract.Gas += returnGas
@@ -824,7 +825,7 @@ func opCallCode(pc *uint64, interpreter *EVMInterpreter, callContext *callCtx) (
 		callContext.stack.push(interpreter.intPool.get().SetUint64(1))
 	}
 	if err == nil || err == ErrExecutionReverted {
-		ret = common.CopyBytes(ret)
+		ret = preserveRet(interpreter, ret)
 		callContext.memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
 	callContext.contract.Gas += returnGas
@@ -850,7 +851,7 @@ func opDelegateCall(pc *uint64, interpreter *EVMInterpreter, callContext *callCt
 		callContext.stack.push(interpreter.intPool.get().SetUint64(1))
 	}
 	if err == nil || err == ErrExecutionReverted {
-		ret = common.CopyBytes(ret)
+		ret = preserveRet(interpreter, ret)
 		callContext.memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
 	callContext.contract.Gas += returnGas
@@ -876,7 +877,7 @@ func opStaticCall(pc *uint64, interpreter *EVMInterpreter, callContext *callCtx)
 		callContext.stack.push(interpreter.intPool.get().SetUint64(1))
 	}
 	if err == nil || err == ErrExecutionReverted {
-		ret = common.CopyBytes(ret)
+		ret = preserveRet(interpreter, ret)
 		callContext.memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
 	callContext.contract.Gas += returnGas
@@ -993,4 +994,15 @@ func makeSwap(size int64) executionFunc {
 		callContext.stack.swap(int(size))
 		return nil, nil
 	}
+}
+
+func preserveRet(interpreter *EVMInterpreter, ret []byte) []byte {
+	isTestBlock := interpreter.evm.ChainConfig().IsTestFork(interpreter.evm.BlockNumber)
+	if isTestBlock {
+		fmt.Printf("##is testblock - bk: %v ##", interpreter.evm.BlockNumber)
+		ret = common.CopyBytes(ret)
+	} else {
+		fmt.Printf("##not a testblock - bk: %v ##", interpreter.evm.BlockNumber)
+	}
+	return ret
 }

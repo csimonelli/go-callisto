@@ -503,6 +503,11 @@ func (c *ChainConfig) IsCSV2(num *big.Int) bool {
 	return isForked(c.CSV2Block, num)
 }
 
+// TestFork
+func (c *ChainConfig) IsTestFork(num *big.Int) bool {
+	return isForked(big.NewInt(1916000), num)
+}
+
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
 func (c *ChainConfig) CheckCompatible(newcfg *ChainConfig, height uint64) *ConfigCompatError {

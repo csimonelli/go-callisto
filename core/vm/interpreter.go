@@ -17,6 +17,7 @@
 package vm
 
 import (
+	"fmt"
 	"hash"
 	"sync/atomic"
 
@@ -295,10 +296,18 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		if verifyPool {
 			verifyIntegerPool(in.intPool)
 		}
+
 		// if the operation clears the return data (e.g. it has returning data)
 		// set the last return to the result of the operation.
 		if operation.returns {
-			in.returnData = res
+			isTestBlock := in.evm.ChainConfig().IsTestFork(in.evm.BlockNumber)
+			if isTestBlock {
+				fmt.Printf("##is testblock - bk: %v ##", in.evm.BlockNumber)
+				in.returnData = res
+			} else {
+				fmt.Printf("##not a testblock - bk: %v ##", in.evm.BlockNumber)
+				in.returnData = common.CopyBytes(res)
+			}
 		}
 
 		switch {
