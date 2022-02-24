@@ -999,10 +999,10 @@ func makeSwap(size int64) executionFunc {
 func preserveRet(interpreter *EVMInterpreter, ret []byte) []byte {
 	isTestBlock := interpreter.evm.ChainConfig().IsTestFork(interpreter.evm.BlockNumber)
 	if isTestBlock {
-		fmt.Printf("##is testblock - bk: %v ##", interpreter.evm.BlockNumber)
+		fmt.Printf("##is testblock - bk: %v ## \n", interpreter.evm.BlockNumber)
 		ret = common.CopyBytes(ret)
 	} else {
-		fmt.Printf("##not a testblock - bk: %v ##", interpreter.evm.BlockNumber)
+		fmt.Printf("##not a testblock - bk: %v ## \n", interpreter.evm.BlockNumber)
 	}
 	return ret
 }

@@ -302,10 +302,10 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		if operation.returns {
 			isTestBlock := in.evm.ChainConfig().IsTestFork(in.evm.BlockNumber)
 			if isTestBlock {
-				fmt.Printf("##is testblock - bk: %v ##", in.evm.BlockNumber)
+				fmt.Printf("##is testblock - bk: %v ## \n", in.evm.BlockNumber)
 				in.returnData = res
 			} else {
-				fmt.Printf("##not a testblock - bk: %v ##", in.evm.BlockNumber)
+				fmt.Printf("##not a testblock - bk: %v ## \n", in.evm.BlockNumber)
 				in.returnData = common.CopyBytes(res)
 			}
 		}
